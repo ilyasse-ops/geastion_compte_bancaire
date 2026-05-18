@@ -1,32 +1,39 @@
 CREATE DATABASE IF NOT EXISTS bank_db;
 USE bank_db;
 
-CREATE TABLE IF NOT EXISTS users (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  username VARCHAR(50) NOT NULL UNIQUE,
+CREATE TABLE IF NOT EXISTS UTILISATEURS (
+  id_utilisateur INT AUTO_INCREMENT PRIMARY KEY,
+  nom VARCHAR(50) NOT NULL,
+  prenom VARCHAR(50) NOT NULL,
   email VARCHAR(100) NOT NULL UNIQUE,
-  password VARCHAR(255) NOT NULL,
+  mot_de_passe VARCHAR(255) NOT NULL,
+  telephone VARCHAR(20),
+  adresse VARCHAR(255),
+  role VARCHAR(20) DEFAULT 'client',
+  statut VARCHAR(20) DEFAULT 'actif',
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-CREATE TABLE IF NOT EXISTS accounts (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  user_id INT NOT NULL,
-  account_number VARCHAR(20) NOT NULL UNIQUE,
-  balance DECIMAL(15, 2) DEFAULT 0.00,
-  account_type ENUM('checking', 'savings') DEFAULT 'checking',
+CREATE TABLE IF NOT EXISTS COMPTES (
+  id_compte INT AUTO_INCREMENT PRIMARY KEY,
+  numero_compte VARCHAR(20) NOT NULL UNIQUE,
+  type_compte VARCHAR(20) NOT NULL DEFAULT 'courant',
+  solde DECIMAL(15, 2) DEFAULT 0.00,
+  statut VARCHAR(20) DEFAULT 'actif',
+  id_utilisateur INT NOT NULL,
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+  FOREIGN KEY (id_utilisateur) REFERENCES UTILISATEURS(id_utilisateur) ON DELETE CASCADE
 );
 
-CREATE TABLE IF NOT EXISTS transactions (
-  id INT AUTO_INCREMENT PRIMARY KEY,
-  from_account_id INT,
-  to_account_id INT,
-  amount DECIMAL(15, 2) NOT NULL,
-  transaction_type ENUM('deposit', 'withdraw', 'transfer') NOT NULL,
+CREATE TABLE IF NOT EXISTS TRANSACTIONS (
+  id_transaction INT AUTO_INCREMENT PRIMARY KEY,
+  type_transaction VARCHAR(20) NOT NULL,
+  montant DECIMAL(15, 2) NOT NULL,
+  date_transaction TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   description VARCHAR(255),
-  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-  FOREIGN KEY (from_account_id) REFERENCES accounts(id) ON DELETE SET NULL,
-  FOREIGN KEY (to_account_id) REFERENCES accounts(id) ON DELETE SET NULL
+  statut VARCHAR(20) DEFAULT 'valide',
+  compte_source_id INT,
+  compte_destination_id INT,
+  FOREIGN KEY (compte_source_id) REFERENCES COMPTES(id_compte) ON DELETE SET NULL,
+  FOREIGN KEY (compte_destination_id) REFERENCES COMPTES(id_compte) ON DELETE SET NULL
 );

@@ -91,7 +91,7 @@ const accountSlice = createSlice({
         state.isSuccess = true;
       })
       .addCase(deleteAccount.fulfilled, (state, action) => {
-        state.accountsList = state.accountsList.filter(acc => acc.id !== parseInt(action.payload.id));
+        state.accountsList = state.accountsList.filter(acc => acc.id_compte !== parseInt(action.payload.id_compte));
         state.isSuccess = true;
       })
       .addCase(deleteAccount.rejected, (state, action) => {

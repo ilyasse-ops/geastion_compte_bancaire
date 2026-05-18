@@ -12,34 +12,41 @@ const initializeDB = async () => {
   });
 
   await dbInstance.exec(`
-    CREATE TABLE IF NOT EXISTS users (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      username TEXT NOT NULL UNIQUE,
+    CREATE TABLE IF NOT EXISTS UTILISATEURS (
+      id_utilisateur INTEGER PRIMARY KEY AUTOINCREMENT,
+      nom TEXT NOT NULL,
+      prenom TEXT NOT NULL,
       email TEXT NOT NULL UNIQUE,
-      password TEXT NOT NULL,
+      mot_de_passe TEXT NOT NULL,
+      telephone TEXT,
+      adresse TEXT,
+      role TEXT DEFAULT 'client',
+      statut TEXT DEFAULT 'actif',
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP
     );
 
-    CREATE TABLE IF NOT EXISTS accounts (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      user_id INTEGER NOT NULL,
-      account_number TEXT NOT NULL UNIQUE,
-      balance REAL DEFAULT 0.00,
-      account_type TEXT DEFAULT 'checking',
+    CREATE TABLE IF NOT EXISTS COMPTES (
+      id_compte INTEGER PRIMARY KEY AUTOINCREMENT,
+      numero_compte TEXT NOT NULL UNIQUE,
+      type_compte TEXT NOT NULL DEFAULT 'courant',
+      solde REAL DEFAULT 0.00,
+      statut TEXT DEFAULT 'actif',
+      id_utilisateur INTEGER NOT NULL,
       created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE
+      FOREIGN KEY (id_utilisateur) REFERENCES UTILISATEURS(id_utilisateur) ON DELETE CASCADE
     );
 
-    CREATE TABLE IF NOT EXISTS transactions (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      from_account_id INTEGER,
-      to_account_id INTEGER,
-      amount REAL NOT NULL,
-      transaction_type TEXT NOT NULL,
+    CREATE TABLE IF NOT EXISTS TRANSACTIONS (
+      id_transaction INTEGER PRIMARY KEY AUTOINCREMENT,
+      type_transaction TEXT NOT NULL,
+      montant REAL NOT NULL,
+      date_transaction DATETIME DEFAULT CURRENT_TIMESTAMP,
       description TEXT,
-      created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-      FOREIGN KEY (from_account_id) REFERENCES accounts(id) ON DELETE SET NULL,
-      FOREIGN KEY (to_account_id) REFERENCES accounts(id) ON DELETE SET NULL
+      statut TEXT DEFAULT 'valide',
+      compte_source_id INTEGER,
+      compte_destination_id INTEGER,
+      FOREIGN KEY (compte_source_id) REFERENCES COMPTES(id_compte) ON DELETE SET NULL,
+      FOREIGN KEY (compte_destination_id) REFERENCES COMPTES(id_compte) ON DELETE SET NULL
     );
   `);
 

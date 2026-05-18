@@ -2,7 +2,7 @@ import { Link, useNavigate } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { logout, reset } from '../slices/authSlice';
 import { resetState } from '../slices/accountSlice';
-import { LogOut, Wallet } from 'lucide-react';
+import { LogOut, Vault } from 'lucide-react';
 
 const Navigation = () => {
   const navigate = useNavigate();
@@ -19,17 +19,17 @@ const Navigation = () => {
   return (
     <nav className="navbar glass-panel">
       <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
-        <Wallet color="var(--accent-primary)" size={32} />
-        <h1 className="gradient-text" style={{ fontSize: '24px', fontWeight: '700' }}>NovaBank</h1>
+        <Vault color="var(--accent-primary)" size={32} />
+        <h1 className="gradient-text" style={{ fontSize: '24px', fontWeight: '700' }}>Vaultia</h1>
       </div>
       <div className="nav-links">
         {user ? (
           <>
-            <span style={{ marginRight: '16px', display: 'flex', alignItems: 'center' }}>
-              Welcome, {user.username}
+            <span style={{ marginRight: '16px', display: 'flex', alignItems: 'center', fontWeight: '500' }}>
+              Bonjour, {user.prenom} {user.nom}
             </span>
             <button className="btn-secondary" onClick={onLogout} style={{ display: 'flex', alignItems: 'center', gap: '8px', padding: '8px 16px', width: 'auto' }}>
-              <LogOut size={18} /> Logout
+              <LogOut size={18} /> Se déconnecter
             </button>
           </>
         ) : (

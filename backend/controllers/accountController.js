@@ -2,27 +2,28 @@ const { getDB } = require('../config/db');
 const crypto = require('crypto');
 
 const createAccount = async (req, res) => {
-  const { account_type } = req.body;
+  const { type_compte } = req.body;
   const userId = req.user.id;
 
   try {
     const db = getDB();
-    const accountNumber = crypto.randomInt(1000000000, 9999999999).toString();
+    const numero_compte = crypto.randomInt(1000000000, 9999999999).toString();
     
     const result = await db.run(
-      'INSERT INTO accounts (user_id, account_number, account_type, balance) VALUES (?, ?, ?, ?)',
-      [userId, accountNumber, account_type || 'checking', 0.00]
+      'INSERT INTO COMPTES (id_utilisateur, numero_compte, type_compte, solde, statut) VALUES (?, ?, ?, ?, ?)',
+      [userId, numero_compte, type_compte || 'courant', 0.00, 'actif']
     );
 
     res.status(201).json({
-      id: result.lastID,
-      user_id: userId,
-      account_number: accountNumber,
-      account_type: account_type || 'checking',
-      balance: 0.00
+      id_compte: result.lastID,
+      id_utilisateur: userId,
+      numero_compte: numero_compte,
+      type_compte: type_compte || 'courant',
+      solde: 0.00,
+      statut: 'actif'
     });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({ message: 'Erreur Serveur', error: error.message });
   }
 };
 
@@ -31,10 +32,10 @@ const getAccounts = async (req, res) => {
 
   try {
     const db = getDB();
-    const accounts = await db.all('SELECT * FROM accounts WHERE user_id = ?', [userId]);
+    const accounts = await db.all('SELECT * FROM COMPTES WHERE id_utilisateur = ?', [userId]);
     res.json(accounts);
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({ message: 'Erreur Serveur', error: error.message });
   }
 };
 
@@ -44,15 +45,15 @@ const getAccountById = async (req, res) => {
 
   try {
     const db = getDB();
-    const account = await db.get('SELECT * FROM accounts WHERE id = ? AND user_id = ?', [accountId, userId]);
+    const account = await db.get('SELECT * FROM COMPTES WHERE id_compte = ? AND id_utilisateur = ?', [accountId, userId]);
     
     if (!account) {
-      return res.status(404).json({ message: 'Account not found' });
+      return res.status(404).json({ message: 'Compte introuvable' });
     }
 
     res.json(account);
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({ message: 'Erreur Serveur', error: error.message });
   }
 };
 
@@ -64,22 +65,22 @@ const deleteAccount = async (req, res) => {
     const db = getDB();
     
     // Check if account exists and belongs to user
-    const account = await db.get('SELECT * FROM accounts WHERE id = ? AND user_id = ?', [accountId, userId]);
+    const account = await db.get('SELECT * FROM COMPTES WHERE id_compte = ? AND id_utilisateur = ?', [accountId, userId]);
     
     if (!account) {
-      return res.status(404).json({ message: 'Account not found or unauthorized' });
+      return res.status(404).json({ message: 'Compte introuvable ou non autorisé' });
     }
 
-    // Optional: check if balance is 0 before deleting. Some banks require this.
-    if (parseFloat(account.balance) !== 0) {
-      return res.status(400).json({ message: 'Cannot delete account with a non-zero balance. Please transfer or withdraw all funds first.' });
+    // Check if balance is 0 before deleting
+    if (parseFloat(account.solde) !== 0) {
+      return res.status(400).json({ message: 'Impossible de supprimer un compte avec un solde non nul. Veuillez d\'abord retirer ou transférer tous les fonds.' });
     }
 
-    await db.run('DELETE FROM accounts WHERE id = ?', [accountId]);
+    await db.run('DELETE FROM COMPTES WHERE id_compte = ?', [accountId]);
     
-    res.json({ id: accountId, message: 'Account deleted successfully' });
+    res.json({ id_compte: accountId, message: 'Compte supprimé avec succès' });
   } catch (error) {
-    res.status(500).json({ message: 'Server error', error: error.message });
+    res.status(500).json({ message: 'Erreur Serveur', error: error.message });
   }
 };
 

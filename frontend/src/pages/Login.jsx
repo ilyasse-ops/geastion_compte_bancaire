@@ -3,7 +3,7 @@ import { useSelector, useDispatch } from 'react-redux';
 import { useNavigate, Link } from 'react-router-dom';
 import { login, reset } from '../slices/authSlice';
 import { toast } from 'react-toastify';
-import { Lock } from 'lucide-react';
+import { Vault } from 'lucide-react';
 
 const Login = () => {
   const [formData, setFormData] = useState({ email: '', password: '' });
@@ -28,18 +28,18 @@ const Login = () => {
   return (
     <div className="auth-container">
       <div className="auth-card glass-panel">
-        <Lock size={48} color="var(--accent-primary)" style={{ marginBottom: '16px' }} />
-        <h2>Welcome Back</h2>
-        <p>Login to manage your finances securely.</p>
+        <Vault size={48} color="var(--accent-primary)" style={{ marginBottom: '16px' }} />
+        <h2>Connexion</h2>
+        <p>Connectez-vous pour gérer vos finances en toute sécurité.</p>
         <form onSubmit={onSubmit}>
-          <input type="email" name="email" value={email} onChange={onChange} placeholder="Email" className="input-field" required />
-          <input type="password" name="password" value={password} onChange={onChange} placeholder="Password" className="input-field" required />
+          <input type="email" name="email" value={email} onChange={onChange} placeholder="Adresse email" className="input-field" required />
+          <input type="password" name="password" value={password} onChange={onChange} placeholder="Mot de passe" className="input-field" required />
           <button type="submit" className="btn-primary" disabled={isLoading}>
-            {isLoading ? 'Processing...' : 'Login'}
+            {isLoading ? 'Connexion en cours...' : 'Se connecter'}
           </button>
         </form>
         <p style={{ marginTop: '24px', fontSize: '14px' }}>
-          Don't have an account? <Link to="/register" style={{ color: 'var(--accent-primary)' }}>Register</Link>
+          Vous n'avez pas de compte ? <Link to="/register" style={{ color: 'var(--accent-primary)' }}>S'inscrire</Link>
         </p>
       </div>
     </div>
